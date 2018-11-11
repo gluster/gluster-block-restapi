@@ -1,0 +1,5 @@
+gluster-block-cli-path = "gluster-block"
+port = 8081
+logdir = "/var/log/gluster-block-restapi"
+logfile = "glusterblockrestd.log"
+loglevel = "info"

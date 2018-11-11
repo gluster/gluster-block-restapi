@@ -1,0 +1,86 @@
+= ReST APIs for Gluster Block Volumes
+
+image:https://travis-ci.org/aravindavk/gluster-block-restapi.svg?branch=master["Build Status", link="https://travis-ci.org/aravindavk/gluster-block-restapi"]
+
+== Install
+
+[source,bash]
+----
+mkdir -p $GOPATH/src/github.com/gluster
+cd $GOPATH/src/github.com/gluster
+git clone https://github.com/aravindavk/gluster-block-restapi.git
+cd gluster-block-restapi
+PREFIX=/usr make
+PREFIX=/usr make install
+----
+
+== Setup
+
+Enable and run `glusterblockrestd` by running,
+
+[source,bash]
+----
+systemctl enable glusterblockrestd
+systemctl start glusterblockrestd
+----
+
+Server port and other settings can be configured by updating the
+following config file.
+
+[source,bash]
+----
+/etc/gluster-block-restapi/config.toml
+----
+
+== Usage
+
+Curl example to create a gluster block volume
+
+[source,bash]
+----
+curl -i -XPOST http://localhost:8081/v1/blockvolumes/block-test/sample-block \
+    -d '{"ha": 3, "size": 1073741824, "hosts": ["192.168.1.11", "192.168.1.12", "192.168.1.13"]}'
+----
+
+Python example to create a gluster block volume
+
+[source,python]
+----
+import requests
+
+req = {
+    "ha": 3,
+    "hosts": ["192.168.1.11", "192.168.1.12", "192.168.1.13"],
+    "size": 1073741824
+}
+
+resp = requests.post("http://localhost:8081/v1/blockvolumes/block-test/sample-block",
+                     data=req)
+
+if resp.status_code == 200:
+    print("[   OK] Block volume created successfully")
+    print(resp.content)
+else:
+    print("[ERROR] Block volume create failed")
+    print(resp.content)
+
+----
+
+== API documentation
+
+=== Create Gluster block volume
+
+`POST /v1/blockvolumes/{hostvolume}/{blockname}`
+
+
+=== List all Gluster block volumes
+
+`GET /v1/blockvolumes/{hostvolume}`
+
+=== View a Gluster block Volume
+
+`GET /v1/blockvolumes/{hostvolume}/{blockname}`
+
+=== Delete a Gluster block volume
+
+`DELETE /v1/blockvolumes/{hostvolume}/{blockname}`
