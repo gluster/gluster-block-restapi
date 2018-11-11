@@ -10,13 +10,13 @@ type ErrorResp struct {
 // BlockVolumeCreateReq represents gluster block
 // volume create request
 type BlockVolumeCreateReq struct {
-	HaCount            int `json:"ha"`
-	AuthEnabled        bool `json:"auth-enabled"`
-	FullPrealloc       bool `json:"full-prealloc"`
-	Size               uint64  `json:"size"`
-	Storage            string  `json:"storage"`
-	RingBufferSizeInMB uint64 `json:"ring-buffer-size-mb"`
-	Hosts              []string  `json:"hosts"`
+	HaCount            int      `json:"ha"`
+	AuthEnabled        bool     `json:"auth-enabled"`
+	FullPrealloc       bool     `json:"full-prealloc"`
+	Size               uint64   `json:"size"`
+	Storage            string   `json:"storage"`
+	RingBufferSizeInMB uint64   `json:"ring-buffer-size-mb"`
+	Hosts              []string `json:"hosts"`
 }
 
 // BlockVolumeDeleteReq represents gluster block volume
