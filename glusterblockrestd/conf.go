@@ -1,8 +1,11 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
+	"net"
 	"path/filepath"
+	"strconv"
 
 	"github.com/BurntSushi/toml"
 )
@@ -10,7 +13,7 @@ import (
 // Config maintains the glusterblockrestd configurations
 type Config struct {
 	GlusterBlockCLIPath string `toml:"gluster-block-cli-path"`
-	Port                int    `toml:"port"`
+	Addr                string `toml:"address"`
 	LogDir              string `toml:"logdir"`
 	LogFile             string `toml:"logfile"`
 	LogLevel            string `toml:"loglevel"`
@@ -26,4 +29,25 @@ func loadConfig(confFilePath string) (*Config, error) {
 		return nil, err
 	}
 	return &conf, nil
+}
+
+func validateAddress(addr string) error {
+	shost, sport, err := net.SplitHostPort(addr)
+	if err != nil {
+		return err
+	}
+
+	port, err := strconv.Atoi(sport)
+	if err != nil {
+		return err
+	}
+
+	err = errors.New("invalid address for glusterblockrestd")
+	if port < 0 || port > 65353 {
+		return err
+	}
+	if shost != "" && net.ParseIP(shost) == nil {
+		return err
+	}
+	return nil
 }

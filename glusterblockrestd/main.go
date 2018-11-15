@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"strconv"
 
 	blockhandlers "github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
 
@@ -50,6 +49,10 @@ func main() {
 		log.WithError(err).Fatal("Failed to load config file")
 	}
 
+	err = validateAddress(conf.Addr)
+	if err != nil {
+		log.WithError(err).Fatal("Failed to start glusterblockrestd server")
+	}
 	// Create Log dir
 	err = os.MkdirAll(conf.LogDir, 0750)
 	if err != nil {
@@ -70,7 +73,7 @@ func main() {
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT"})
 
 	log.Info("Starting glusterblockrestd service..")
-	err = http.ListenAndServe(":"+strconv.Itoa(conf.Port), handlers.CORS(allowedOrigins, allowedMethods)(router))
+	err = http.ListenAndServe(conf.Addr, handlers.CORS(allowedOrigins, allowedMethods)(router))
 	if err != nil {
 		log.WithError(err).Fatal("Failed to start glusterblockrestd")
 	}
