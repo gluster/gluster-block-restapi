@@ -3,3 +3,6 @@ address = "127.0.0.1:8081"
 logdir = "/var/log/gluster-block-restapi"
 logfile = "glusterblockrestd.log"
 loglevel = "info"
+enabletls = false
+certfile = "/path/to/server.crt"
+keyfile = "/path/to/server.key"

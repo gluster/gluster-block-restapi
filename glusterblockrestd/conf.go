@@ -17,6 +17,9 @@ type Config struct {
 	LogDir              string `toml:"logdir"`
 	LogFile             string `toml:"logfile"`
 	LogLevel            string `toml:"loglevel"`
+	CertFile            string `toml:"certfile"`
+	KeyFile             string `toml:"keyfile"`
+	EnableTLS           bool   `toml:"enabletls"`
 }
 
 func loadConfig(confFilePath string) (*Config, error) {

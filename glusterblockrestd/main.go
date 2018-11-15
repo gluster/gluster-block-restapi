@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"os"
 	"runtime"
 
+	"github.com/gluster/gluster-block-restapi/glusterblockrestd/apiserver"
 	blockhandlers "github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
+	"github.com/gluster/gluster-block-restapi/pkg/utils"
 
-	"github.com/gorilla/handlers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -67,14 +67,26 @@ func main() {
 
 	blockhandlers.SetGlusterBlockCLI(conf.GlusterBlockCLIPath)
 
-	router := blockhandlers.NewRoutes()
+	serverRunOpts := &apiserver.ServerRunOptions{
+		Addr:                  conf.Addr,
+		EnableTLS:             conf.EnableTLS,
+		CertFile:              conf.CertFile,
+		KeyFile:               conf.KeyFile,
+		CorsAllowedOriginList: []string{"*"},
+		CorsAllowedMethodList: []string{"GET", "POST", "DELETE", "PUT"},
+	}
+	server := apiserver.NewServer(serverRunOpts)
+	errChan := make(chan error)
+	closeChan := utils.SetSignalHandler()
 
-	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
-	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT"})
+	go server.Run(errChan)
 
-	log.Info("Starting glusterblockrestd service..")
-	err = http.ListenAndServe(conf.Addr, handlers.CORS(allowedOrigins, allowedMethods)(router))
-	if err != nil {
-		log.WithError(err).Fatal("Failed to start glusterblockrestd")
+	select {
+	case err := <-errChan:
+		log.WithError(err).Error("encounter an error in starting glusterblockrestd")
+	case <-closeChan:
+		if err := server.Stop(); err != nil {
+			log.WithError(err).Error("error in stopping glusterblock api server")
+		}
 	}
 }
