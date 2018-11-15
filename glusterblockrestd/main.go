@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strconv"
 
-	blockhandlers "github.com/aravindavk/gluster-block-restapi/glusterblockrestd/handlers"
+	blockhandlers "github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
 
 	"github.com/gorilla/handlers"
 	log "github.com/sirupsen/logrus"

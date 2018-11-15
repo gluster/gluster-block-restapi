@@ -21,8 +21,8 @@ export GOPATH=$BUILDDIR/go
 mkdir -p "$GOPATH"/{bin,pkg,src}
 export PATH=$GOPATH/bin:$PATH
 
-GBLOCKRESTSRC=$GOPATH/src/github.com/aravindavk/gluster-block-restapi
-mkdir -p "$GOPATH/src/github.com/aravindavk/"
+GBLOCKRESTSRC=$GOPATH/src/github.com/gluster/gluster-block-restapi
+mkdir -p "$GOPATH/src/github.com/gluster"
 ln -s "$GBLOCKRESTCLONE" "$GBLOCKRESTSRC"
 
 INSTALL_GOMETALINTER=no "$GBLOCKRESTSRC/scripts/install-reqs.sh"

@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/aravindavk/gluster-block-restapi/pkg/utils"
+	"github.com/gluster/gluster-block-restapi/pkg/utils"
 
 	"github.com/gorilla/mux"
 )

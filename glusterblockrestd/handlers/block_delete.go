@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/aravindavk/gluster-block-restapi/pkg/api"
-	"github.com/aravindavk/gluster-block-restapi/pkg/errors"
-	"github.com/aravindavk/gluster-block-restapi/pkg/utils"
+	"github.com/gluster/gluster-block-restapi/pkg/api"
+	"github.com/gluster/gluster-block-restapi/pkg/errors"
+	"github.com/gluster/gluster-block-restapi/pkg/utils"
 
 	"github.com/gorilla/mux"
 )

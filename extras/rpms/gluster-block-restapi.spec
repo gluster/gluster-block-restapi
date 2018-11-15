@@ -16,7 +16,7 @@
 
 %global provider github
 %global provider_tld com
-%global project aravindavk
+%global project gluster
 %global repo gluster-block-restapi
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path %{provider_prefix}

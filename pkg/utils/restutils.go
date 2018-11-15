@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/aravindavk/gluster-block-restapi/pkg/api"
+	"github.com/gluster/gluster-block-restapi/pkg/api"
 	log "github.com/sirupsen/logrus"
 )
 
