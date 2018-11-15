@@ -1,6 +1,6 @@
 = ReST APIs for Gluster Block Volumes
 
-image:https://travis-ci.org/aravindavk/gluster-block-restapi.svg?branch=master["Build Status", link="https://travis-ci.org/aravindavk/gluster-block-restapi"]
+image:https://travis-ci.org/gluster/gluster-block-restapi.svg?branch=master["Build Status", link="https://travis-ci.org/gluster/gluster-block-restapi"]
 
 == Install
 
@@ -8,7 +8,7 @@ image:https://travis-ci.org/aravindavk/gluster-block-restapi.svg?branch=master["
 ----
 mkdir -p $GOPATH/src/github.com/gluster
 cd $GOPATH/src/github.com/gluster
-git clone https://github.com/aravindavk/gluster-block-restapi.git
+git clone https://github.com/gluster/gluster-block-restapi.git
 cd gluster-block-restapi
 PREFIX=/usr make
 PREFIX=/usr make install

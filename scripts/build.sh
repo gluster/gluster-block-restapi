@@ -22,7 +22,7 @@ fi
 OUTDIR=${2:-build}
 mkdir -p "$OUTDIR"
 
-REPO_PATH="github.com/aravindavk/gluster-block-restapi"
+REPO_PATH="github.com/gluster/gluster-block-restapi"
 GOPKG="${REPO_PATH}/${PACKAGE}"
 BIN=$(basename "$PACKAGE")
 
