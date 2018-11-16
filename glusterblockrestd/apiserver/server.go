@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
+	"github.com/gluster/gluster-block-restapi/glusterblockrestd/middleware"
 
 	muxhandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -43,11 +44,12 @@ func NewServer(conf *ServerRunOptions) *Server {
 		muxhandlers.AllowedOrigins(conf.CorsAllowedOriginList),
 		muxhandlers.AllowedMethods(conf.CorsAllowedMethodList),
 	))
+	server.AddMiddleware(middleware.WithReqLogger)
 	return server
 }
 
 // AddMiddleware adds http middleware to gluster-block rest server.
-// eg.. we can a authentication, tracing ..etc middleware
+// eg.. we can add middleware like authentication, tracing ..etc
 func (s *Server) AddMiddleware(middleware ...func(http.Handler) http.Handler) {
 	s.middlewares = append(s.middlewares, middleware...)
 }
