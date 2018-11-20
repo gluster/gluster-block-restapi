@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
-	"github.com/gluster/gluster-block-restapi/glusterblockrestd/middleware"
 
 	muxhandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -44,7 +43,6 @@ func NewServer(conf *ServerRunOptions) *Server {
 		muxhandlers.AllowedOrigins(conf.CorsAllowedOriginList),
 		muxhandlers.AllowedMethods(conf.CorsAllowedMethodList),
 	))
-	server.AddMiddleware(middleware.WithReqLogger)
 	return server
 }
 

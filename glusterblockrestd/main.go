@@ -76,6 +76,9 @@ func main() {
 		CorsAllowedMethodList: []string{"GET", "POST", "DELETE", "PUT"},
 	}
 	server := apiserver.NewServer(serverRunOpts)
+
+	//Add required middlewares here
+	server.AddMiddleware(middleware.WithReqLogger)
 	errChan := make(chan error)
 	closeChan := utils.SetSignalHandler()
 
