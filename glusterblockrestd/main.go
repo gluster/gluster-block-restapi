@@ -50,10 +50,15 @@ func main() {
 		log.WithError(err).Fatal("Failed to load config file")
 	}
 
+	setWithEnvVariables(conf)
+
 	err = validateAddress(conf.Addr)
 	if err != nil {
 		log.WithError(err).Fatal("Failed to start glusterblockrestd server")
 	}
+
+	restAuth := middleware.NewJWTAuth(conf.User, conf.Secret, conf.AuthEnabled)
+
 	// Create Log dir
 	err = os.MkdirAll(conf.LogDir, 0750)
 	if err != nil {
@@ -79,7 +84,7 @@ func main() {
 	server := apiserver.NewServer(serverRunOpts)
 
 	//Add required middlewares here
-	server.AddMiddleware(middleware.Recover, middleware.WithReqLogger)
+	server.AddMiddleware(middleware.Recover, middleware.WithReqLogger, restAuth.Auth)
 
 	errChan := make(chan error)
 	closeChan := utils.SetSignalHandler()

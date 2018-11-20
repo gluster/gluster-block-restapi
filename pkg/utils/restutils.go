@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net/http"
 
@@ -61,4 +63,17 @@ func SendHTTPError(w http.ResponseWriter, statusCode int, apierr error) {
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		log.WithError(err).Error("Failed to send the response -", resp)
 	}
+}
+
+//GenerateQsh generate the hash string to avoid URL tampering
+func GenerateQsh(r *http.Request) (string, error) {
+	// qsh URL tampering prevention.
+	//more info https://developer.atlassian.com/cloud/bitbucket/query-string-hash
+	claim := r.Method + "&" + r.URL.Path
+	hash := sha256.New()
+	_, err := hash.Write([]byte(claim))
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)), err
 }

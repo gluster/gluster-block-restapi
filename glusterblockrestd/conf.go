@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -19,6 +20,9 @@ type Config struct {
 	LogLevel            string `toml:"loglevel"`
 	CertFile            string `toml:"certfile"`
 	KeyFile             string `toml:"keyfile"`
+	User                string `toml:"user"`
+	Secret              string `toml:"secret"`
+	AuthEnabled         bool   `toml:"restauth"`
 	EnableTLS           bool   `toml:"enabletls"`
 }
 
@@ -53,4 +57,18 @@ func validateAddress(addr string) error {
 		return err
 	}
 	return nil
+}
+func setWithEnvVariables(options *Config) {
+	// Check for user key
+	env := os.Getenv("GB_REST_USER_KEY")
+	if "" != env {
+		options.AuthEnabled = true
+		options.User = env
+	}
+
+	// Check for secret
+	env = os.Getenv("GB_REST_SECRET_KEY")
+	if "" != env {
+		options.Secret = env
+	}
 }
