@@ -8,6 +8,7 @@ import (
 
 	"github.com/gluster/gluster-block-restapi/glusterblockrestd/apiserver"
 	blockhandlers "github.com/gluster/gluster-block-restapi/glusterblockrestd/handlers"
+	"github.com/gluster/gluster-block-restapi/glusterblockrestd/middleware"
 	"github.com/gluster/gluster-block-restapi/pkg/utils"
 
 	log "github.com/sirupsen/logrus"
@@ -78,7 +79,8 @@ func main() {
 	server := apiserver.NewServer(serverRunOpts)
 
 	//Add required middlewares here
-	server.AddMiddleware(middleware.WithReqLogger)
+	server.AddMiddleware(middleware.Recover, middleware.WithReqLogger)
+
 	errChan := make(chan error)
 	closeChan := utils.SetSignalHandler()
 
