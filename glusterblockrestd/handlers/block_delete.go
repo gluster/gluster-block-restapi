@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func blockVolumeDeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (gb *GlusterBlockHandler) deleteBlockVolume(w http.ResponseWriter, r *http.Request) {
 	p := mux.Vars(r)
 	hostVolume := p["hostvolume"]
 	blockName := p["blockname"]
@@ -37,13 +37,4 @@ func blockVolumeDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendHTTPResponse(w, http.StatusNoContent, nil)
-}
-
-func init() {
-	registerRoute(Route{
-		"BlockVolumeDelete",
-		"DELETE",
-		"/v1/blockvolumes/{hostvolume}/{blockname}",
-		blockVolumeDeleteHandler,
-	})
 }

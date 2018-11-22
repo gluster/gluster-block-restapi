@@ -72,7 +72,7 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) registerRoutes() {
-	s.srvMux = handlers.NewRoutes()
+	s.srvMux = handlers.NewRouter()
 
 	for i := len(s.middlewares) - 1; i >= 0; i-- {
 		s.srvMux = s.middlewares[i](s.srvMux)

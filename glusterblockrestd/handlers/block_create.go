@@ -5,13 +5,12 @@ import (
 	stderrors "errors"
 	"net/http"
 
-	"github.com/gluster/gluster-block-restapi/glusterblockrestd/blockvolmanager"
 	"github.com/gluster/gluster-block-restapi/pkg/api"
 	"github.com/gluster/gluster-block-restapi/pkg/errors"
 	"github.com/gluster/gluster-block-restapi/pkg/utils"
 )
 
-func blockVolumeCreateHandler(w http.ResponseWriter, r *http.Request) {
+func (gb *GlusterBlockHandler) createBlockVolume(w http.ResponseWriter, r *http.Request) {
 	var (
 		req     = &api.BlockVolumeCreateReq{}
 		resp    = &api.BlockVolumeCreateResp{}
@@ -23,8 +22,7 @@ func blockVolumeCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blockManager := blockvolmanager.NewBlockVolumeCLI(blockvolmanager.WithCLIPath(glusterBlockCLI))
-	body, err := blockManager.CreateBlockVolume(req)
+	body, err := gb.blockVolManager.CreateBlockVolume(req)
 
 	if err != nil {
 		utils.SendHTTPError(w, http.StatusInternalServerError, err)
@@ -43,13 +41,4 @@ func blockVolumeCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendHTTPResponse(w, http.StatusCreated, body)
 
-}
-
-func init() {
-	registerRoute(Route{
-		"BlockVolumeCreate",
-		"POST",
-		"/v1/blockvolumes",
-		blockVolumeCreateHandler,
-	})
 }
