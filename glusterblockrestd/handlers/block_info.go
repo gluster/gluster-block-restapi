@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func blockVolumeInfoHandler(w http.ResponseWriter, r *http.Request) {
+func (gb *GlusterBlockHandler) blockVolumeInfo(w http.ResponseWriter, r *http.Request) {
 	p := mux.Vars(r)
 	hostVolume := p["hostvolume"]
 	blockVolume := p["blockname"]
@@ -20,13 +20,4 @@ func blockVolumeInfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendHTTPResponse(w, http.StatusOK, out)
-}
-
-func init() {
-	registerRoute(Route{
-		"BlockVolumesInfo",
-		"GET",
-		"/v1/blockvolumes/{hostvolume}/{blockname}",
-		blockVolumeInfoHandler,
-	})
 }
