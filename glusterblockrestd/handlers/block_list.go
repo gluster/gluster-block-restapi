@@ -9,10 +9,13 @@ import (
 )
 
 func (gb *GlusterBlockHandler) listBlockVolumes(w http.ResponseWriter, r *http.Request) {
-	p := mux.Vars(r)
-	hostVolume := p["hostvolume"]
-	cmdArgs := []string{"list", hostVolume, "--json"}
-	out, err := utils.ExecuteCommandOutput(glusterBlockCLI, cmdArgs...)
+	var (
+		p          = mux.Vars(r)
+		hostVolume = p["hostvolume"]
+	)
+
+	out, err := gb.blockVolManager.ListBlockVolume(hostVolume)
+
 	if err != nil {
 		utils.SendHTTPError(w, http.StatusInternalServerError, err)
 		return

@@ -8,41 +8,37 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gluster/gluster-block-restapi/pkg/api"
 	"github.com/gluster/gluster-block-restapi/pkg/utils"
 )
 
 // BlockVolumeManager defines set of methods for various gluster block operation
 type BlockVolumeManager interface {
-	CreateBlockVolume(req *api.BlockVolumeCreateReq) ([]byte, error)
+	CreateBlockVolume(hostVolName string, blockName string, size uint64, hosts []string, optFuncs ...OptFunc) ([]byte, error)
+	DeleteBlockVolume(hostVolName string, blockName string, optFuncs ...OptFunc) error
+	BlockVolumeInfo(hostVolName string, blockName string) ([]byte, error)
+	ListBlockVolume(hostVolName string) ([]byte, error)
 }
-
-// BlockVolumeCliOptFuncs receives a blockVolumeCLI object and overrides its members
-type BlockVolumeCliOptFuncs func(cli *blockVolumeCLI)
 
 type blockVolumeCLI struct {
 	cliPath string
 }
 
-// WithCLIPath overrides cliPath of gluster-block
-func WithCLIPath(path string) BlockVolumeCliOptFuncs {
-	return func(cli *blockVolumeCLI) {
-		cli.cliPath = path
-	}
-}
-
 // NewBlockVolumeCLI returns a concrete instance implementing the BlockVolumeManager
-// interface.
-func NewBlockVolumeCLI(optFuncs ...BlockVolumeCliOptFuncs) BlockVolumeManager {
-	bm := &blockVolumeCLI{}
+// interface. If the `clipath`  param is empty then it will use the default gluster-block
+// cli path
+func NewBlockVolumeCLI(cliPath string) BlockVolumeManager {
+	bm := &blockVolumeCLI{
+		cliPath: cliPath,
+	}
+
+	if bm.cliPath != "" {
+		return bm
+	}
 
 	if defaultCliPath, err := exec.LookPath("gluster-block"); err == nil {
 		bm.cliPath = defaultCliPath
 	}
 
-	for _, optFunc := range optFuncs {
-		optFunc(bm)
-	}
 	return bm
 }
 
@@ -56,30 +52,17 @@ func NewBlockVolumeCLI(optFuncs ...BlockVolumeCliOptFuncs) BlockVolumeManager {
 //                               <host1[,host2,...]> [size]
 // create block device [defaults: ha 1, auth disable, prealloc no, size in bytes,
 // ring-buffer default size dependends on kernel]
-func (bm *blockVolumeCLI) CreateBlockVolume(req *api.BlockVolumeCreateReq) ([]byte, error) {
-	cmdArgs := []string{"create", req.HostingVolume + "/" + req.Name}
+func (bm *blockVolumeCLI) CreateBlockVolume(hostVolName string, blockName string, size uint64, hosts []string, optFuncs ...OptFunc) ([]byte, error) {
+	var (
+		cmdArgs = []string{"create", hostVolName + "/" + blockName}
+		opt     = &Options{}
+	)
 
-	if req.HaCount > 0 {
-		cmdArgs = append(cmdArgs, "ha", strconv.Itoa(req.HaCount))
-	}
+	opt.applyOpts(optFuncs...)
+	optinalArgs := opt.prepareArgs()
 
-	if req.FullPrealloc {
-		cmdArgs = append(cmdArgs, "prealloc", "full")
-	}
-
-	if req.AuthEnabled {
-		cmdArgs = append(cmdArgs, "auth", "enable")
-	}
-
-	if req.RingBufferSizeInMB > 0 {
-		cmdArgs = append(cmdArgs, "ring-buffer", strconv.FormatUint(req.RingBufferSizeInMB, 10))
-	}
-
-	if req.Storage != "" {
-		cmdArgs = append(cmdArgs, "storage", req.Storage)
-	}
-
-	cmdArgs = append(cmdArgs, strings.Join(req.Hosts, ","), strconv.FormatUint(req.Size, 10), "--json")
+	cmdArgs = append(cmdArgs, optinalArgs...)
+	cmdArgs = append(cmdArgs, strings.Join(hosts, ","), strconv.FormatUint(size, 10), "--json")
 
 	out, err := utils.ExecuteCommandOutput(bm.cliPath, cmdArgs...)
 
@@ -88,6 +71,35 @@ func (bm *blockVolumeCLI) CreateBlockVolume(req *api.BlockVolumeCreateReq) ([]by
 	}
 
 	return truncateCliOutput(out)
+}
+
+// DeleteBlockVolume deletes a block volume
+// command to delete a block volume:
+// delete  <volname/blockname> [unlink-storage <yes|no>] [force]
+func (bm *blockVolumeCLI) DeleteBlockVolume(hostVolName string, blockName string, optFuncs ...OptFunc) error {
+	var (
+		cmdArgs = []string{"delete", hostVolName + "/" + blockName}
+		opt     = &Options{}
+	)
+
+	opt.applyOpts(optFuncs...)
+	optinalArgs := opt.prepareArgs()
+
+	cmdArgs = append(cmdArgs, optinalArgs...)
+
+	return utils.ExecuteCommandRun(bm.cliPath, cmdArgs...)
+}
+
+// BlockVolumeInfo returns details about block device.
+func (bm *blockVolumeCLI) BlockVolumeInfo(hostVolName string, blockName string) ([]byte, error) {
+	var cmdArgs = []string{"info", hostVolName + "/" + blockName, "--json"}
+	return utils.ExecuteCommandOutput(bm.cliPath, cmdArgs...)
+}
+
+// ListBlockVolume will list available block devices for a given hosting volume
+func (bm *blockVolumeCLI) ListBlockVolume(hostVolName string) ([]byte, error) {
+	var cmdArgs = []string{"list", hostVolName, "--json"}
+	return utils.ExecuteCommandOutput(bm.cliPath, cmdArgs...)
 }
 
 // truncateCliOutput will check if the given `body` is a valid

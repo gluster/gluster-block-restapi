@@ -24,7 +24,7 @@ func (gb *GlusterBlockHandler) getAllRoutes() Routes {
 		{
 			Name:        "BlockVolumeCreate",
 			Method:      http.MethodPost,
-			Pattern:     "/v1/blockvolumes",
+			Pattern:     "/v1/blockvolumes/{hostvolume}/{blockname}",
 			HandlerFunc: gb.createBlockVolume,
 		},
 		{
