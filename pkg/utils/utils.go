@@ -3,7 +3,10 @@ package utils
 import (
 	"bytes"
 	"os/exec"
+	"strings"
 	"syscall"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // ExecuteCommandError represents command execution error
@@ -49,12 +52,15 @@ func ExecuteCommandOutput(cmdName string, arg ...string) ([]byte, error) {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
+	log.Debug("executing command: ", cmdName, " ", strings.Join(arg, " "))
 	out, err := cmd.Output()
 
 	if err != nil {
+		log.WithError(err).Error("got error in executing command")
 		return out, execStderrCombined(err, &stderr)
 	}
 
+	log.Debug("command executed successfully")
 	return out, nil
 }
 
@@ -65,5 +71,11 @@ func ExecuteCommandRun(cmdName string, arg ...string) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 
-	return execStderrCombined(cmd.Run(), &stderr)
+	log.Debug("executing command: ", cmdName, " ", strings.Join(arg, " "))
+	if err := execStderrCombined(cmd.Run(), &stderr); err != nil {
+		log.WithError(err).Error("got error in executing command")
+		return err
+	}
+	log.Debug("command executed successfully")
+	return nil
 }
