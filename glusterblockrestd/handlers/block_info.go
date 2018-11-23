@@ -9,11 +9,13 @@ import (
 )
 
 func (gb *GlusterBlockHandler) blockVolumeInfo(w http.ResponseWriter, r *http.Request) {
-	p := mux.Vars(r)
-	hostVolume := p["hostvolume"]
-	blockVolume := p["blockname"]
-	cmdArgs := []string{"info", hostVolume + "/" + blockVolume, "--json"}
-	out, err := utils.ExecuteCommandOutput(glusterBlockCLI, cmdArgs...)
+	var (
+		p           = mux.Vars(r)
+		hostVolume  = p["hostvolume"]
+		blockVolume = p["blockname"]
+	)
+
+	out, err := gb.blockVolManager.BlockVolumeInfo(hostVolume, blockVolume)
 	if err != nil {
 		utils.SendHTTPError(w, http.StatusInternalServerError, err)
 		return

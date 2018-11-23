@@ -29,7 +29,7 @@ type Routes []Route
 func NewRouter() *mux.Router {
 	var (
 		router              = mux.NewRouter().StrictSlash(true)
-		blockManager        = blockvolmanager.NewBlockVolumeCLI(blockvolmanager.WithCLIPath(glusterBlockCLI))
+		blockManager        = blockvolmanager.NewBlockVolumeCLI(glusterBlockCLI)
 		glusterBlockHandler = NewGlusterBlockHandler(blockManager)
 	)
 	// register all routes with a given router instance

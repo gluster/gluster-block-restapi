@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	block "github.com/gluster/gluster-block-restapi/glusterblockrestd/blockvolmanager"
 	"github.com/gluster/gluster-block-restapi/pkg/api"
 	"github.com/gluster/gluster-block-restapi/pkg/errors"
 	"github.com/gluster/gluster-block-restapi/pkg/utils"
@@ -11,27 +12,28 @@ import (
 )
 
 func (gb *GlusterBlockHandler) deleteBlockVolume(w http.ResponseWriter, r *http.Request) {
-	p := mux.Vars(r)
-	hostVolume := p["hostvolume"]
-	blockName := p["blockname"]
+	var (
+		p          = mux.Vars(r)
+		hostVolume = p["hostvolume"]
+		blockName  = p["blockname"]
+		opts       = []block.OptFunc{}
+		req        = api.BlockVolumeDeleteReq{}
+	)
 
-	var req api.BlockVolumeDeleteReq
 	if err := utils.UnmarshalRequest(r, &req); err != nil {
 		utils.SendHTTPError(w, http.StatusBadRequest, errors.ErrJSONParsingFailed)
 		return
 	}
 
-	//delete  <volname/blockname> [unlink-storage <yes|no>] [force]
-	cmdArgs := []string{"delete", hostVolume + "/" + blockName}
 	if req.UnlinkStorage {
-		cmdArgs = append(cmdArgs, "unlink-storage", "yes")
-	}
-	if req.Force {
-		cmdArgs = append(cmdArgs, "force")
+		opts = append(opts, block.WithUnlinkStorage)
 	}
 
-	err := utils.ExecuteCommandRun(glusterBlockCLI, cmdArgs...)
-	if err != nil {
+	if req.Force {
+		opts = append(opts, block.WithForceDelete)
+	}
+
+	if err := gb.blockVolManager.DeleteBlockVolume(hostVolume, blockName, opts...); err != nil {
 		utils.SendHTTPError(w, http.StatusInternalServerError, err)
 		return
 	}

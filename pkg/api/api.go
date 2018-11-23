@@ -10,9 +10,6 @@ type ErrorResp struct {
 // BlockVolumeCreateReq represents gluster block
 // volume create request
 type BlockVolumeCreateReq struct {
-	// Name represents block Volume name
-	Name               string   `json:"name"`
-	HostingVolume      string   `json:"hosting_volume"`
 	HaCount            int      `json:"ha"`
 	AuthEnabled        bool     `json:"auth-enabled"`
 	FullPrealloc       bool     `json:"full-prealloc"`
