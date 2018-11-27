@@ -23,9 +23,11 @@ type BlockVolumeCreateReq struct {
 // volume create resp
 // Note: same as gluster-block cli output
 type BlockVolumeCreateResp struct {
-	IQN     string   `json:"IQN"`
-	Portals []string `json:"PORTAL(S)"`
-	Result  string   `json:"RESULT"`
+	IQN      string   `json:"IQN"`
+	Portals  []string `json:"PORTAL(S)"`
+	Username string   `json:"USERNAME"`
+	Password string   `json:"PASSWORD"`
+	Result   string   `json:"RESULT"`
 }
 
 // CLIError respresents error from gluster-block cli
@@ -40,4 +42,23 @@ type CLIError struct {
 type BlockVolumeDeleteReq struct {
 	UnlinkStorage bool `json:"unlink-storage"`
 	Force         bool `json:"force"`
+}
+
+// BlockVolumeListResponse represents gluster block volume
+// list resp
+type BlockVolumeListResponse struct {
+	Blocks []string `json:"blocks"`
+	Result string   `json:"RESULT"`
+}
+
+// BlockVolumeInfoResponse represents gluster block volume
+// info resp
+type BlockVolumeInfoResponse struct {
+	Name       string   `json:"NAME"`
+	Volume     string   `json:"VOLUME"`
+	GBID       string   `json:"GBID"`
+	Size       string   `json:"SIZE"`
+	Ha         int      `json:"HA"`
+	Password   string   `json:"PASSWORD"`
+	ExportedOn []string `json:"EXPORTED ON"`
 }
