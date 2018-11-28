@@ -77,10 +77,10 @@ func (c *Client) Do(reqBody interface{}, successV interface{}) error {
 	}
 
 	resp, err := c.httpClient.Do(req)
-	defer closeRespBody(resp)
 	if err != nil {
 		return err
 	}
+	defer closeRespBody(resp)
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
 		if successV == nil {
